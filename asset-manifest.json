@@ -1,15 +1,16 @@
 {
   "files": {
     "main.css": "/dog-breed-boolean-search/static/css/main.76b146ca.css",
-    "main.js": "/dog-breed-boolean-search/static/js/main.d7d9e795.js",
+    "main.js": "/dog-breed-boolean-search/static/js/main.c9e4cd4b.js",
     "static/js/787.38bb67df.chunk.js": "/dog-breed-boolean-search/static/js/787.38bb67df.chunk.js",
+    "static/media/dog_breeds.csv": "/dog-breed-boolean-search/static/media/dog_breeds.103972dc36ea8cfd0418.csv",
     "index.html": "/dog-breed-boolean-search/index.html",
     "main.76b146ca.css.map": "/dog-breed-boolean-search/static/css/main.76b146ca.css.map",
-    "main.d7d9e795.js.map": "/dog-breed-boolean-search/static/js/main.d7d9e795.js.map",
+    "main.c9e4cd4b.js.map": "/dog-breed-boolean-search/static/js/main.c9e4cd4b.js.map",
     "787.38bb67df.chunk.js.map": "/dog-breed-boolean-search/static/js/787.38bb67df.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.76b146ca.css",
-    "static/js/main.d7d9e795.js"
+    "static/js/main.c9e4cd4b.js"
   ]
 }
