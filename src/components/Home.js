@@ -1,6 +1,8 @@
 import React, {useState} from 'react'
 import Papa from 'papaparse';
 import DogInfo from './DogInfo';
+import csvFile from '../dog_breeds.csv'
+
 
 const Home = () => {
  
@@ -45,71 +47,71 @@ const Home = () => {
       });
     getData(searchQuery);
  };
-    
+
  async function getData(searchInput){        
         
     // parse string query more into object from
-    const searchObject = parseSearchString(searchInput);       
-    
-    // parse local CSV file
-    const response = await fetch("../../dog_breeds.csv");           
-    const reader = response.body.getReader();
-    const result = await reader.read();
-    const decoder = new TextDecoder("utf-8");
-    const csv = decoder.decode(result.value);
-    const results = Papa.parse(csv, { header: true, }); // object with { data, errors, meta }
-        
-    //Filter CSV Data based on search query/object 
-    const filteredData = results.data.filter(item => {  
-        
-        let found = false;                        
-        for (let field in searchObject) {  
-        
-        //Field is numerical (i.e Height/Longevity)
-        if (field === "Height" || field === "Longevity" || field === "Longevity-1" || field ==="Height-1"){ 
-            const current_val = parseInt(searchObject[field]);
-            // in case same field was chosen twice
-            if (field.includes("-")){                   
-                const fields = field.split("-");
-                field = fields[0]                       
-            }       
-            let [min, max] = item[field].split("-");            
-            found = (min <= current_val && max >= current_val);
-        }
-        //Field chosen is "All Fields"
-        else if (field.includes("all")){                           
-            const keyword = searchObject[field].toLowerCase();
-            const dogTerms = Object.values(item).toString().toLowerCase().replace(/,/g, " ").split(' ') 
-            found = dogTerms.includes(keyword);   
-        }
-        else {       
-            const fieldTerms = [searchObject[field].toLowerCase()];
-            // in case same field was chosen twice
-            if (field.includes("-")){                    
-                const fields = field.split("-");
-                field = fields[0]                       
-            }      
-            const itemTerms = item[field].toString().toLowerCase().replace(/,/g, " ").split(' ');
-            found = fieldTerms.some(term => itemTerms.includes(term))
-        }
-        
-            //Break Loop if one true result if found on OR or one false result on AND
-            if (operator === "OR" && found){                
-                    break
+    const searchObject = parseSearchString(searchInput);  
+
+    Papa.parse(csvFile, {
+      download: true,
+      header: true,
+      complete: function (results) {
+           const filteredData = results.data.filter(item => {  
+       
+            let found = false;                        
+            for (let field in searchObject) {  
+            
+            //Field is numerical (i.e Height/Longevity)
+            if (field === "Height" || field === "Longevity" || field === "Longevity-1" || field ==="Height-1"){ 
+                const current_val = parseInt(searchObject[field]);
+                // in case same field was chosen twice
+                if (field.includes("-")){                   
+                    const fields = field.split("-");
+                    field = fields[0]                       
+                }       
+                let [min, max] = item[field].split("-");            
+                found = (min <= current_val && max >= current_val);
             }
-            else if (operator === "AND" && !found){                 
-                    break
-            }             
-        }
-        return found;
-    }); 
-    //return data that fits the query, sort alphabetically
-    setParsedCsvData(filteredData.sort((a,b)=> a['Breed'].localeCompare(b["Breed"])))
+            //Field chosen is "All Fields"
+            else if (field.includes("all")){ 
+                                       
+                const keyword = searchObject[field].toLowerCase();
+                const dogTerms = Object.values(item).toString().toLowerCase().replace(/,/g, " ").split(' ') 
+                found = dogTerms.includes(keyword);   
+            }
+            else {       
+                const fieldTerms = [searchObject[field].toLowerCase()];
+                // in case same field was chosen twice
+                if (field.includes("-")){                    
+                    const fields = field.split("-");
+                    field = fields[0]                       
+                }      
+                const itemTerms = item[field].toString().toLowerCase().replace(/,/g, " ").split(' ');
+                found = fieldTerms.some(term => itemTerms.includes(term))
+            }
+            
+                //Break Loop if one true result if found on OR or one false result on AND
+                if (operator === "OR" && found){                
+                        break
+                }
+                else if (operator === "AND" && !found){                 
+                        break
+                }             
+            }
+            return found;
+        });
+
+       setParsedCsvData(filteredData.sort((a,b)=> a['Breed'].localeCompare(b["Breed"])))
+      
+      }
+    });
+
 }
 
     //convert search query string into search object
     function parseSearchString(searchString) {
-        
+      
         // Regular expression to match the field name and value
         const fieldRegex = /"([\w\s]+)":([\w\d]+)/g;
         const fields = {};
